@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
@@ -7,24 +8,24 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 // MySQL database setup
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password:'',
-  database: 'quoteflix',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 // Nodemailer setup
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: process.env.EMAIL_SERVICE,
   secure: true,
   port: 465,
   auth: {
-    user: 'web.quoteflix@gmail.com',
-    pass: 'pjdhuqdoiokrcdwi',
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
@@ -52,7 +53,7 @@ app.post('/signup', (req, res) => {
     // Send confirmation email
     try {
       await transporter.sendMail({
-        from: 'web.quoteflix@gmail.com',
+        from: process.env.EMAIL_USER,
         to: email,
         subject: 'Registration Successful',
         text: `Hello ${name},\n\nYou have successfully signed up on Quoteflix.`,
@@ -87,7 +88,7 @@ app.post('/login', (req, res) => {
       // Send login success email
       try {
         await transporter.sendMail({
-          from: 'web.quoteflix@gmail.com',
+          from: process.env.EMAIL_USER,
           to: email,
           subject: 'Login Successful',
           text: `Hello ${userName},\n\nYou have successfully logged in to Quoteflix.`,
